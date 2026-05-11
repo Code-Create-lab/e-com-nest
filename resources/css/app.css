@@ -24,3 +24,251 @@ body {
 ::selection {
     background: rgba(14, 165, 233, 0.18);
 }
+
+body[data-marketing-page] {
+    font-family: 'Manrope', var(--font-sans);
+    color: #111111;
+    background:
+        radial-gradient(circle at top left, rgba(255, 255, 255, 0.96), transparent 24%),
+        radial-gradient(circle at 80% 0%, rgba(228, 228, 231, 0.72), transparent 26%),
+        linear-gradient(180deg, #fafaf9 0%, #f4f4f5 46%, #ededee 100%);
+    scroll-behavior: smooth;
+}
+
+body[data-marketing-page] .marketing-display {
+    font-family: 'Instrument Serif', Georgia, serif;
+    font-weight: 400;
+}
+
+body[data-marketing-page] .marketing-grid {
+    background-image:
+        linear-gradient(rgba(24, 24, 27, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(24, 24, 27, 0.05) 1px, transparent 1px);
+    background-size: 104px 104px;
+    mask-image: radial-gradient(circle at center, black 22%, transparent 78%);
+    opacity: 0.42;
+}
+
+body[data-marketing-page] .glass-panel,
+body[data-marketing-page] .glass-panel-strong {
+    border: 1px solid rgba(24, 24, 27, 0.08);
+    box-shadow:
+        0 26px 60px rgba(17, 17, 17, 0.07),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(14px);
+}
+
+body[data-marketing-page] .glass-panel {
+    background: rgba(255, 255, 255, 0.8);
+}
+
+body[data-marketing-page] .glass-panel-strong {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(249, 249, 248, 0.88));
+}
+
+body[data-marketing-page] .marketing-mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.8rem;
+    height: 2.8rem;
+    border-radius: 1rem;
+    background: #111111;
+    color: #ffffff;
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.18em;
+}
+
+body[data-marketing-page] .marketing-badge,
+body[data-marketing-page] .marketing-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border: 1px solid rgba(24, 24, 27, 0.1);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(10px);
+}
+
+body[data-marketing-page] .marketing-badge {
+    padding: 0.72rem 1rem;
+    color: #27272a;
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+}
+
+body[data-marketing-page] .marketing-pill {
+    padding: 0.75rem 1rem;
+    color: #3f3f46;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+body[data-marketing-page] .marketing-primary-btn,
+body[data-marketing-page] .marketing-secondary-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    border-radius: 999px;
+    padding: 0.95rem 1.4rem;
+    font-weight: 700;
+    transition:
+        transform 220ms ease,
+        background-color 220ms ease,
+        border-color 220ms ease,
+        color 220ms ease,
+        box-shadow 220ms ease;
+}
+
+body[data-marketing-page] .marketing-primary-btn {
+    background: #111111;
+    color: #ffffff;
+    box-shadow: 0 16px 32px rgba(17, 17, 17, 0.14);
+}
+
+body[data-marketing-page] .marketing-primary-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 20px 38px rgba(17, 17, 17, 0.18);
+}
+
+body[data-marketing-page] .marketing-secondary-btn {
+    background: rgba(255, 255, 255, 0.75);
+    border: 1px solid rgba(24, 24, 27, 0.12);
+    color: #18181b;
+}
+
+body[data-marketing-page] .marketing-secondary-btn:hover {
+    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.95);
+}
+
+body[data-marketing-page] .marketing-stat-card,
+body[data-marketing-page] .marketing-service-box,
+body[data-marketing-page] .marketing-floating-card {
+    border: 1px solid rgba(24, 24, 27, 0.1);
+    background: rgba(255, 255, 255, 0.88);
+    box-shadow: 0 18px 40px rgba(17, 17, 17, 0.08);
+}
+
+body[data-marketing-page] .marketing-stat-card {
+    border-radius: 1.6rem;
+    padding: 1.15rem;
+}
+
+body[data-marketing-page] .marketing-service-box {
+    border-radius: 1.9rem;
+    padding: 1.55rem;
+    transition:
+        transform 220ms ease,
+        box-shadow 220ms ease;
+}
+
+body[data-marketing-page] .marketing-service-box:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 24px 46px rgba(17, 17, 17, 0.11);
+}
+
+body[data-marketing-page] .marketing-tag {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    border: 1px solid rgba(24, 24, 27, 0.1);
+    background: #111111;
+    color: #ffffff;
+    padding: 0.6rem 0.9rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+body[data-marketing-page] .marketing-hero-frame {
+    position: relative;
+    padding: 1.75rem 0 4rem 2.5rem;
+}
+
+body[data-marketing-page] .marketing-floating-card {
+    position: absolute;
+    max-width: 220px;
+    border-radius: 1.7rem;
+    padding: 1.1rem;
+}
+
+body[data-marketing-page] .marketing-floating-image {
+    position: absolute;
+    right: -0.2rem;
+    bottom: 0;
+    width: min(44%, 280px);
+    overflow: hidden;
+    border-radius: 1.8rem;
+    border: 1px solid rgba(24, 24, 27, 0.1);
+    background: white;
+    box-shadow: 0 26px 55px rgba(17, 17, 17, 0.1);
+}
+
+body[data-marketing-page] .reveal-up {
+    opacity: 0;
+    transform: translateY(28px);
+    transition:
+        opacity 700ms ease-out,
+        transform 700ms ease-out;
+    will-change: opacity, transform;
+}
+
+body[data-marketing-page] .reveal-up.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body[data-marketing-page] {
+        scroll-behavior: auto;
+    }
+
+    body[data-marketing-page] .reveal-up,
+    body[data-marketing-page] .marketing-primary-btn,
+    body[data-marketing-page] .marketing-secondary-btn,
+    body[data-marketing-page] .marketing-service-box {
+        transition: none;
+        transform: none;
+    }
+
+    body[data-marketing-page] .reveal-up {
+        opacity: 1;
+    }
+}
+
+@media (max-width: 1023px) {
+    body[data-marketing-page] .marketing-hero-frame {
+        padding: 1rem 0 13rem;
+    }
+
+    body[data-marketing-page] .marketing-floating-card {
+        left: 1rem;
+        top: auto;
+        bottom: 8.5rem;
+    }
+
+    body[data-marketing-page] .marketing-floating-image {
+        right: 1rem;
+        width: 48%;
+    }
+}
+
+@media (max-width: 639px) {
+    body[data-marketing-page] .marketing-hero-frame {
+        padding: 0 0 0;
+        display: grid;
+        gap: 1rem;
+    }
+
+    body[data-marketing-page] .marketing-floating-card,
+    body[data-marketing-page] .marketing-floating-image {
+        position: static;
+        width: 100%;
+        max-width: none;
+    }
+}
