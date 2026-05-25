@@ -12,7 +12,7 @@
     </x-admin.page-header>
 
     <section class="mt-6 rounded-[2rem] border border-white/70 bg-white/90 p-6 shadow-lg shadow-slate-900/5 backdrop-blur">
-        <form method="GET" class="grid gap-4 xl:grid-cols-[minmax(0,1fr)_16rem_16rem_auto]">
+        <form method="GET" class="grid gap-4 xl:grid-cols-[minmax(0,1fr)_12rem_14rem_14rem_auto]">
             <div>
                 <label for="search" class="mb-2 block text-sm font-medium text-slate-700">Search projects</label>
                 <input id="search" name="search" type="text" value="{{ $search }}" placeholder="Search by project name, customer, or description" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm shadow-sm outline-none transition focus:border-sky-400 focus:ring-4 focus:ring-sky-100">
@@ -38,6 +38,16 @@
                 </select>
             </div>
 
+            <div>
+                <label for="engagement_type" class="mb-2 block text-sm font-medium text-slate-700">Engagement</label>
+                <select id="engagement_type" name="engagement_type" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm shadow-sm outline-none transition focus:border-sky-400 focus:ring-4 focus:ring-sky-100">
+                    <option value="">All types</option>
+                    @foreach ($engagementTypes as $type)
+                        <option value="{{ $type->value }}" @selected($selectedEngagement === $type->value)>{{ $type->label() }}</option>
+                    @endforeach
+                </select>
+            </div>
+
             <div class="flex items-end gap-3">
                 <button type="submit" class="inline-flex items-center rounded-2xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-slate-900/15 transition hover:bg-slate-800">
                     Filter
@@ -53,8 +63,16 @@
                             <div class="flex flex-wrap items-center gap-3">
                                 <h2 class="text-lg font-semibold text-slate-950">{{ $project->project_name }}</h2>
                                 <x-admin.status-badge :label="$project->status->label()" :classes="$project->status->badgeClasses()" />
+                                @if ($project->engagement_type)
+                                    <x-admin.status-badge :label="$project->engagement_type->label()" :classes="$project->engagement_type->badgeClasses()" />
+                                @endif
+                                @if ($project->engagement_type?->isRecurring() && $project->monthly_amount)
+                                    <span class="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-200">
+                                        Rs {{ number_format((float) $project->monthly_amount, 0) }}/mo
+                                    </span>
+                                @endif
                             </div>
-                            <p class="mt-2 text-sm text-slate-500">{{ $project->customer?->name }} | {{ $project->start_date?->format('d M Y') ?: 'No start date' }}</p>
+                            <p class="mt-2 text-sm text-slate-500">{{ $project->customer?->name }} | {{ $project->start_date?->format('d M Y') ?: 'No start date' }}@if ($project->engagement_type?->isRecurring() && $project->support_renews_on) | Renews {{ $project->support_renews_on->format('d M Y') }}@endif</p>
                             <p class="mt-3 max-w-3xl text-sm text-slate-600">{{ $project->description ?: 'No description added.' }}</p>
                         </div>
 

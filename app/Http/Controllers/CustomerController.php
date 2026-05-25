@@ -7,6 +7,7 @@ use App\Http\Requests\Customer\UpdateCustomerRequest;
 use App\Models\Customer;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 class CustomerController extends Controller
@@ -75,14 +76,19 @@ class CustomerController extends Controller
 
     public function destroy(Customer $customer): RedirectResponse
     {
-        if ($customer->projects()->exists() || $customer->invoices()->exists()) {
-            return back()->with('error', 'Delete the related projects and invoices before removing this customer.');
-        }
+        DB::transaction(function () use ($customer): void {
+            $invoiceIds = $customer->invoices()->pluck('id');
+            $projectIds = $customer->projects()->pluck('id');
 
-        $customer->delete();
+            DB::table('invoice_items')->whereIn('invoice_id', $invoiceIds)->delete();
+            $customer->invoices()->delete();
+            DB::table('tasks')->whereIn('project_id', $projectIds)->delete();
+            $customer->projects()->delete();
+            $customer->delete();
+        });
 
         return redirect()
             ->route('customers.index')
-            ->with('success', 'Customer deleted successfully.');
+            ->with('success', 'Customer and related projects, invoices, and tasks deleted successfully.');
     }
 }

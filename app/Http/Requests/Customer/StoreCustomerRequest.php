@@ -22,6 +22,9 @@ class StoreCustomerRequest extends FormRequest
             'phone' => ['nullable', 'string', 'max:30'],
             'company_name' => ['nullable', 'string', 'max:150'],
             'address' => ['nullable', 'string', 'max:1000'],
+            'live_url' => ['nullable', 'url', 'max:255'],
+            'stg_url' => ['nullable', 'url', 'max:255'],
+            'system_monitor_url' => ['nullable', 'url', 'max:255'],
         ];
     }
 }

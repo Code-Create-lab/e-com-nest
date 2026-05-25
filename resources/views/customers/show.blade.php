@@ -6,7 +6,35 @@
 
 @section('content')
     <x-admin.page-header :title="$customer->name" :description="$customer->company_name ?: 'Customer profile and latest related records.'">
-        <a href="{{ route('customers.edit', $customer) }}" class="inline-flex items-center rounded-2xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-slate-900/15 transition hover:bg-slate-800">
+        @foreach ([
+            ['label' => 'Live', 'url' => $customer->live_url, 'tone' => 'emerald'],
+            ['label' => 'Staging', 'url' => $customer->stg_url, 'tone' => 'amber'],
+            ['label' => 'Monitor', 'url' => $customer->system_monitor_url, 'tone' => 'sky'],
+        ] as $env)
+            @if ($env['url'])
+                @php
+                    $toneClass = match ($env['tone']) {
+                        'emerald' => 'border-emerald-200 bg-emerald-50/70 text-emerald-700 hover:border-emerald-300',
+                        'amber' => 'border-amber-200 bg-amber-50/70 text-amber-700 hover:border-amber-300',
+                        default => 'border-sky-200 bg-sky-50/70 text-sky-700 hover:border-sky-300',
+                    };
+                    $dotClass = match ($env['tone']) {
+                        'emerald' => 'bg-emerald-500',
+                        'amber' => 'bg-amber-500',
+                        default => 'bg-sky-500',
+                    };
+                @endphp
+                <a href="{{ $env['url'] }}" target="_blank" rel="noopener noreferrer" data-magnetic data-magnetic-strength="0.15" class="lift-hover inline-flex items-center gap-2 rounded-2xl border {{ $toneClass }} px-3 py-2 text-xs font-semibold uppercase tracking-[0.14em] transition">
+                    <span class="relative flex h-2 w-2">
+                        <span class="absolute inline-flex h-full w-full animate-ping rounded-full {{ $dotClass }} opacity-60"></span>
+                        <span class="relative inline-flex h-2 w-2 rounded-full {{ $dotClass }}"></span>
+                    </span>
+                    <span>{{ $env['label'] }}</span>
+                    <svg viewBox="0 0 24 24" class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5h5v5M19 5l-9 9M5 19h7"/></svg>
+                </a>
+            @endif
+        @endforeach
+        <a href="{{ route('customers.edit', $customer) }}" data-magnetic data-magnetic-strength="0.2" class="inline-flex items-center rounded-2xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-slate-900/15 transition hover:bg-slate-800">
             Edit customer
         </a>
     </x-admin.page-header>
@@ -37,6 +65,36 @@
                     <dd class="mt-2 text-sm text-slate-900">{{ $customer->address ?: 'Not provided' }}</dd>
                 </div>
             </dl>
+
+            @if ($customer->live_url || $customer->stg_url || $customer->system_monitor_url)
+                <div class="mt-6 border-t border-slate-100 pt-5">
+                    <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Environment URLs</p>
+                    <div class="mt-4 grid gap-3 sm:grid-cols-3">
+                        @foreach ([
+                            ['label' => 'Live', 'url' => $customer->live_url, 'tone' => 'emerald'],
+                            ['label' => 'Staging', 'url' => $customer->stg_url, 'tone' => 'amber'],
+                            ['label' => 'Monitor', 'url' => $customer->system_monitor_url, 'tone' => 'sky'],
+                        ] as $env)
+                            @if ($env['url'])
+                                @php
+                                    $toneClass = match ($env['tone']) {
+                                        'emerald' => 'border-emerald-200 bg-emerald-50/70 text-emerald-700',
+                                        'amber' => 'border-amber-200 bg-amber-50/70 text-amber-700',
+                                        default => 'border-sky-200 bg-sky-50/70 text-sky-700',
+                                    };
+                                @endphp
+                                <a href="{{ $env['url'] }}" target="_blank" rel="noopener noreferrer" data-magnetic data-magnetic-strength="0.15" class="lift-hover group flex items-center justify-between gap-2 rounded-2xl border {{ $toneClass }} px-4 py-3 text-sm font-medium">
+                                    <span class="flex flex-col">
+                                        <span class="text-[0.65rem] font-semibold uppercase tracking-[0.18em] opacity-80">{{ $env['label'] }}</span>
+                                        <span class="truncate text-slate-900">{{ parse_url($env['url'], PHP_URL_HOST) ?: $env['url'] }}</span>
+                                    </span>
+                                    <svg viewBox="0 0 24 24" class="h-4 w-4 flex-shrink-0 transition group-hover:translate-x-0.5" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5h5v5M19 5l-9 9M5 19h7"/></svg>
+                                </a>
+                            @endif
+                        @endforeach
+                    </div>
+                </div>
+            @endif
         </section>
 
         <section class="rounded-[2rem] border border-white/70 bg-white/90 p-6 shadow-lg shadow-slate-900/5 backdrop-blur">

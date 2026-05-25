@@ -21,6 +21,9 @@ class Customer extends Model
         'phone',
         'company_name',
         'address',
+        'live_url',
+        'stg_url',
+        'system_monitor_url',
     ];
 
     public function projects(): HasMany

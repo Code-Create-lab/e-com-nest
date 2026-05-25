@@ -25,6 +25,28 @@
         <label for="address" class="mb-2 block text-sm font-medium text-slate-700">Address</label>
         <textarea id="address" name="address" rows="4" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm shadow-sm outline-none transition focus:border-sky-400 focus:ring-4 focus:ring-sky-100">{{ old('address', $customer->address) }}</textarea>
     </div>
+
+    <div class="md:col-span-2">
+        <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Environment URLs</p>
+    </div>
+
+    <div>
+        <label for="live_url" class="mb-2 block text-sm font-medium text-slate-700">Live URL</label>
+        <input id="live_url" name="live_url" type="url" inputmode="url" placeholder="https://example.com" value="{{ old('live_url', $customer->live_url) }}" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm shadow-sm outline-none transition focus:border-sky-400 focus:ring-4 focus:ring-sky-100">
+        @error('live_url')<p class="mt-2 text-xs text-rose-600">{{ $message }}</p>@enderror
+    </div>
+
+    <div>
+        <label for="stg_url" class="mb-2 block text-sm font-medium text-slate-700">Staging URL</label>
+        <input id="stg_url" name="stg_url" type="url" inputmode="url" placeholder="https://stg.example.com" value="{{ old('stg_url', $customer->stg_url) }}" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm shadow-sm outline-none transition focus:border-sky-400 focus:ring-4 focus:ring-sky-100">
+        @error('stg_url')<p class="mt-2 text-xs text-rose-600">{{ $message }}</p>@enderror
+    </div>
+
+    <div class="md:col-span-2">
+        <label for="system_monitor_url" class="mb-2 block text-sm font-medium text-slate-700">System Monitor URL</label>
+        <input id="system_monitor_url" name="system_monitor_url" type="url" inputmode="url" placeholder="https://status.example.com" value="{{ old('system_monitor_url', $customer->system_monitor_url) }}" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm shadow-sm outline-none transition focus:border-sky-400 focus:ring-4 focus:ring-sky-100">
+        @error('system_monitor_url')<p class="mt-2 text-xs text-rose-600">{{ $message }}</p>@enderror
+    </div>
 </div>
 
 <div class="mt-8 flex flex-wrap gap-3">

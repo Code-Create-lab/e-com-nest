@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Project;
 
+use App\Enums\EngagementType;
 use App\Enums\ProjectStatus;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
@@ -26,6 +27,12 @@ class UpdateProjectRequest extends FormRequest
             'end_date' => ['nullable', 'date', 'after_or_equal:start_date'],
             'status' => ['required', new Enum(ProjectStatus::class)],
             'progress' => ['required', 'integer', 'between:0,100'],
+            'engagement_type' => ['required', new Enum(EngagementType::class)],
+            'monthly_amount' => ['nullable', 'numeric', 'min:0', 'required_if:engagement_type,monthly_retainer'],
+            'billing_day' => ['nullable', 'integer', 'between:1,31'],
+            'hours_per_month' => ['nullable', 'integer', 'between:0,1000'],
+            'hourly_rate' => ['nullable', 'numeric', 'min:0', 'max:999999.99'],
+            'support_renews_on' => ['nullable', 'date'],
         ];
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\EngagementType;
 use App\Enums\ProjectStatus;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -25,6 +26,12 @@ class Project extends Model
         'end_date',
         'status',
         'progress',
+        'engagement_type',
+        'monthly_amount',
+        'billing_day',
+        'hours_per_month',
+        'hourly_rate',
+        'support_renews_on',
     ];
 
     /**
@@ -35,8 +42,14 @@ class Project extends Model
         return [
             'start_date' => 'date',
             'end_date' => 'date',
+            'support_renews_on' => 'date',
             'status' => ProjectStatus::class,
+            'engagement_type' => EngagementType::class,
             'progress' => 'integer',
+            'monthly_amount' => 'decimal:2',
+            'hourly_rate' => 'decimal:2',
+            'billing_day' => 'integer',
+            'hours_per_month' => 'integer',
         ];
     }
 
@@ -48,6 +61,11 @@ class Project extends Model
     public function invoices(): HasMany
     {
         return $this->hasMany(Invoice::class);
+    }
+
+    public function tasks(): HasMany
+    {
+        return $this->hasMany(Task::class)->orderBy('position')->orderBy('id');
     }
 
     public function scopeSearch(Builder $query, ?string $term): Builder

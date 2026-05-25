@@ -3,12 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Services\DashboardService;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class DashboardController extends Controller
 {
-    public function __invoke(DashboardService $dashboardService): View
+    public function __invoke(Request $request, DashboardService $dashboardService): View
     {
-        return view('dashboard.index', $dashboardService->getStats());
+        $period = in_array($request->input('period'), ['daily', 'weekly', 'monthly', 'yearly'], true)
+            ? $request->input('period')
+            : 'monthly';
+
+        $stats = $dashboardService->getStats();
+        $stats['revenuePeriod'] = $period;
+        $stats['revenueSeries'] = $dashboardService->revenueSeries($period);
+
+        return view('dashboard.index', $stats);
     }
 }
