@@ -1,10 +1,9 @@
 @props(['href', 'active' => false])
 
-<a href="{{ $href }}"
-    @class([
-        'flex items-center rounded-2xl px-4 py-3 text-sm font-medium transition',
-        'bg-slate-950 text-white shadow-lg shadow-slate-900/10' => $active,
-        'text-slate-600 hover:bg-slate-100 hover:text-slate-950' => ! $active,
-    ])>
-    {{ $slot }}
+<a href="{{ $href }}" class="sidebar-link {{ $active ? 'is-active' : '' }}">
+    <span class="sidebar-icon">
+        <span class="block h-1.5 w-1.5 rounded-full bg-current opacity-60"></span>
+    </span>
+    <span class="sidebar-label">{{ $slot }}</span>
+    <span class="sidebar-tooltip">{{ $slot }}</span>
 </a>

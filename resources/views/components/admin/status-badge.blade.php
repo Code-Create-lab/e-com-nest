@@ -1,5 +1,6 @@
-@props(['label', 'classes'])
+@props(['label', 'classes' => ''])
 
-<span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ring-1 {{ $classes }}">
+<span class="badge {{ $classes }}">
+    <span class="badge-dot"></span>
     {{ $label }}
 </span>

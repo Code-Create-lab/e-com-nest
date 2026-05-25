@@ -159,9 +159,40 @@ export function initCounters(root = document) {
     });
 }
 
+/**
+ * Page-enter timeline — animates [data-page-section] children of .page-enter root.
+ */
+export function initPageEnter(root = document) {
+    const container = root.querySelector('.page-enter');
+    if (!container) return;
+    const sections = container.querySelectorAll('[data-page-section]');
+    if (!sections.length) {
+        container.classList.remove('page-enter');
+        return;
+    }
+    if (prefersReduced) {
+        gsap.set(sections, { opacity: 1, y: 0 });
+        container.classList.remove('page-enter');
+        return;
+    }
+    gsap.fromTo(
+        sections,
+        { opacity: 0, y: 12 },
+        {
+            opacity: 1,
+            y: 0,
+            duration: 0.6,
+            ease: 'power3.out',
+            stagger: 0.06,
+            onComplete: () => container.classList.remove('page-enter'),
+        }
+    );
+}
+
 export function initAllMotion(root = document) {
     initReveals(root);
     initTilt(root);
     initMagnetic(root);
     initCounters(root);
+    initPageEnter(root);
 }

@@ -1,11 +1,9 @@
 import './bootstrap';
 import Sortable from 'sortablejs';
-import { autoMountBackgrounds } from './three-bg';
 import { initAllMotion } from './motion';
 import { mountRevenueChart } from './revenue-chart';
 
 window.addEventListener('DOMContentLoaded', () => {
-    autoMountBackgrounds();
     initAllMotion();
     mountRevenueChart();
 
@@ -180,29 +178,124 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 
     // -----------------------------------------------------------------------
-    // Admin sidebar (existing)
+    // Admin sidebar — collapse (desktop) + drawer (mobile)
     // -----------------------------------------------------------------------
     const sidebar = document.querySelector('[data-sidebar]');
     const backdrop = document.querySelector('[data-sidebar-backdrop]');
-    const openButton = document.querySelector('[data-sidebar-open]');
+    const openButtons = document.querySelectorAll('[data-sidebar-open]');
+    const collapseButtons = document.querySelectorAll('[data-sidebar-collapse]');
 
-    if (sidebar && backdrop && openButton) {
-        const closeSidebar = () => {
+    if (sidebar) {
+        const SIDEBAR_KEY = 'sidebar:collapsed';
+
+        const closeDrawer = () => {
             sidebar.classList.add('-translate-x-full');
-            backdrop.classList.add('hidden');
+            backdrop && backdrop.classList.add('hidden');
         };
 
-        const openSidebar = () => {
+        const openDrawer = () => {
             sidebar.classList.remove('-translate-x-full');
-            backdrop.classList.remove('hidden');
+            backdrop && backdrop.classList.remove('hidden');
         };
 
-        openButton.addEventListener('click', openSidebar);
-        backdrop.addEventListener('click', closeSidebar);
+        openButtons.forEach((btn) => btn.addEventListener('click', openDrawer));
+        backdrop && backdrop.addEventListener('click', closeDrawer);
 
         window.addEventListener('resize', () => {
             if (window.innerWidth >= 1024) {
-                closeSidebar();
+                closeDrawer();
+            }
+        });
+
+        // Restore persisted collapsed state on desktop
+        try {
+            const saved = localStorage.getItem(SIDEBAR_KEY);
+            if (saved === 'true' && window.innerWidth >= 1024) {
+                sidebar.setAttribute('data-collapsed', 'true');
+            }
+        } catch (e) {}
+
+        const toggleCollapse = () => {
+            if (window.innerWidth < 1024) {
+                openDrawer();
+                return;
+            }
+            const next = sidebar.getAttribute('data-collapsed') === 'true' ? 'false' : 'true';
+            sidebar.setAttribute('data-collapsed', next);
+            try { localStorage.setItem(SIDEBAR_KEY, next); } catch (e) {}
+        };
+
+        collapseButtons.forEach((btn) => btn.addEventListener('click', toggleCollapse));
+    }
+
+    // -----------------------------------------------------------------------
+    // Theme toggle (light/dark)
+    // -----------------------------------------------------------------------
+    const themeToggle = document.querySelector('[data-theme-toggle]');
+    const themeIcons = {
+        light: document.querySelector('[data-theme-icon="light"]'),
+        dark: document.querySelector('[data-theme-icon="dark"]'),
+    };
+
+    const renderThemeIcon = (theme) => {
+        if (themeIcons.light) themeIcons.light.classList.toggle('hidden', theme === 'dark');
+        if (themeIcons.dark) themeIcons.dark.classList.toggle('hidden', theme !== 'dark');
+    };
+
+    renderThemeIcon(document.documentElement.getAttribute('data-theme') || 'light');
+
+    if (themeToggle) {
+        themeToggle.addEventListener('click', () => {
+            const current = document.documentElement.getAttribute('data-theme') || 'light';
+            const next = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', next);
+            try { localStorage.setItem('theme', next); } catch (e) {}
+            renderThemeIcon(next);
+        });
+    }
+
+    // -----------------------------------------------------------------------
+    // Profile dropdown menu
+    // -----------------------------------------------------------------------
+    document.querySelectorAll('[data-profile-menu]').forEach((menu) => {
+        const trigger = menu.querySelector('[data-profile-trigger]');
+        const panel = menu.querySelector('[data-profile-panel]');
+        if (!trigger || !panel) return;
+
+        const openPanel = () => {
+            panel.classList.remove('hidden');
+            requestAnimationFrame(() => {
+                panel.classList.remove('scale-95', 'opacity-0');
+                panel.classList.add('scale-100', 'opacity-100');
+            });
+        };
+        const closePanel = () => {
+            panel.classList.add('scale-95', 'opacity-0');
+            panel.classList.remove('scale-100', 'opacity-100');
+            setTimeout(() => panel.classList.add('hidden'), 140);
+        };
+
+        trigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            panel.classList.contains('hidden') ? openPanel() : closePanel();
+        });
+        document.addEventListener('click', (e) => {
+            if (!menu.contains(e.target)) closePanel();
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closePanel();
+        });
+    });
+
+    // -----------------------------------------------------------------------
+    // Cmd/Ctrl + K — focus global search
+    // -----------------------------------------------------------------------
+    const globalSearch = document.querySelector('[data-global-search]');
+    if (globalSearch) {
+        document.addEventListener('keydown', (e) => {
+            if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+                e.preventDefault();
+                globalSearch.focus();
             }
         });
     }

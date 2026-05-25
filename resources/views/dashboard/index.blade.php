@@ -6,10 +6,12 @@
 
 @section('content')
     <x-admin.page-header title="Admin Dashboard" description="Track customers, lead flow, delivery progress, and paid revenue from a single responsive workspace.">
-        <a href="{{ route('customers.create') }}" data-magnetic data-magnetic-strength="0.2" class="inline-flex items-center rounded-2xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-slate-900/15 transition hover:bg-slate-800">
+        <a href="{{ route('customers.create') }}" data-magnetic data-magnetic-strength="0.18" class="btn btn-gradient">
+            <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14M5 12h14"/></svg>
             New customer
         </a>
-        <a href="{{ route('projects.create') }}" data-magnetic data-magnetic-strength="0.18" class="inline-flex items-center rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-slate-300 hover:text-slate-950">
+        <a href="{{ route('projects.create') }}" data-magnetic data-magnetic-strength="0.16" class="btn btn-secondary">
+            <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="2" y="7" width="20" height="14" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
             New project
         </a>
     </x-admin.page-header>
@@ -24,7 +26,7 @@
             :count="(float) $totalRevenue"
             prefix="Rs "
             hint="Paid invoice total generated from the system."
-            tone="rose"
+            tone="primary"
         />
     </div>
 
@@ -52,7 +54,7 @@
         />
     </div>
 
-    <div class="mt-6 grid gap-4 md:grid-cols-2">
+    <div class="mt-4 grid gap-4 md:grid-cols-2">
         <x-admin.stat-card
             title="CR Paid"
             :value="'Rs '.number_format($crPaidAmount, 2)"
@@ -79,27 +81,33 @@
             'yearly' => 'Yearly · 5y',
         ];
     @endphp
-    <section data-motion-reveal data-motion-variant="up" data-tilt data-tilt-max="2" class="tilt-surface mt-6 rounded-[2rem] border border-white/70 bg-white/90 p-6 shadow-lg shadow-slate-900/5 backdrop-blur">
+    <section data-page-section data-motion-reveal data-motion-variant="up" class="surface-elevated mt-6 p-6">
         <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <div>
-                <h2 class="text-lg font-semibold text-slate-950">Revenue</h2>
-                <p class="text-sm text-slate-500">Paid invoices + paid CR tasks combined. Toggle period to drill in.</p>
-                <p class="mt-2 text-3xl font-semibold tracking-tight text-slate-950">Rs {{ number_format((float) $revenueSeries['total'], 2) }}
-                    <span class="ml-2 text-xs font-medium uppercase tracking-[0.2em] text-slate-500">{{ $periodLabels[$revenuePeriod] }}</span>
+                <span class="eyebrow">Revenue</span>
+                <p class="mt-1 text-3xl font-semibold tracking-tight text-[var(--fg-strong)]">
+                    Rs {{ number_format((float) $revenueSeries['total'], 2) }}
                 </p>
-                <p class="mt-1 text-xs text-slate-500">
-                    Invoices: <span class="font-semibold text-sky-700">Rs {{ number_format((float) ($revenueSeries['invoice_total'] ?? 0), 2) }}</span>
-                    · CR: <span class="font-semibold text-emerald-700">Rs {{ number_format((float) ($revenueSeries['cr_total'] ?? 0), 2) }}</span>
+                <p class="mt-1.5 text-xs text-[var(--fg-muted)]">
+                    Paid invoices + paid CR tasks · {{ $periodLabels[$revenuePeriod] }}
                 </p>
+                <div class="mt-2 flex flex-wrap items-center gap-2 text-xs">
+                    <span class="chip"><span class="chip-dot" style="background: var(--tone-info);"></span> Invoices Rs {{ number_format((float) ($revenueSeries['invoice_total'] ?? 0), 0) }}</span>
+                    <span class="chip"><span class="chip-dot" style="background: var(--tone-success);"></span> CR Rs {{ number_format((float) ($revenueSeries['cr_total'] ?? 0), 0) }}</span>
+                </div>
             </div>
 
-            <div class="inline-flex flex-wrap gap-1.5 rounded-2xl border border-slate-200 bg-white p-1 text-xs font-semibold uppercase tracking-[0.16em]">
+            <div class="inline-flex flex-wrap gap-1 rounded-xl border p-1 text-xs font-semibold" style="border-color: var(--border-default); background: var(--bg-subtle);">
                 @foreach ($periodLabels as $key => $label)
                     @php $active = $revenuePeriod === $key; @endphp
                     <a
                         href="{{ route('dashboard', ['period' => $key]) }}"
-                        data-magnetic data-magnetic-strength="0.12"
-                        class="inline-flex items-center rounded-xl px-3 py-1.5 transition {{ $active ? 'bg-slate-950 text-white shadow' : 'text-slate-600 hover:text-slate-950' }}"
+                        class="inline-flex items-center rounded-lg px-3 py-1.5 transition"
+                        @if ($active)
+                            style="background: var(--bg-elevated); color: var(--fg-strong); box-shadow: var(--shadow-sm);"
+                        @else
+                            style="color: var(--fg-muted);"
+                        @endif
                     >
                         {{ explode(' · ', $label)[0] }}
                     </a>
@@ -117,64 +125,64 @@
     </section>
 
     @if ($crByCustomer->isNotEmpty())
-        <section data-motion-reveal data-motion-variant="up" data-tilt data-tilt-max="2" class="tilt-surface mt-6 rounded-[2rem] border border-white/70 bg-white/90 p-6 shadow-lg shadow-slate-900/5 backdrop-blur">
+        <section data-page-section data-motion-reveal data-motion-variant="up" class="surface-elevated mt-6 p-6">
             <div class="flex items-center justify-between gap-3">
                 <div>
-                    <h2 class="text-lg font-semibold text-slate-950">CR breakdown by customer</h2>
-                    <p class="text-sm text-slate-500">Billable change-request tasks across one-time projects.</p>
+                    <h2 class="text-base font-semibold text-[var(--fg-strong)]">CR breakdown by customer</h2>
+                    <p class="text-sm text-[var(--fg-muted)]">Billable change-request tasks across one-time projects.</p>
                 </div>
-                <a href="{{ route('customers.index') }}" class="text-sm font-medium text-sky-700 hover:text-sky-900">All customers</a>
+                <a href="{{ route('customers.index') }}" class="text-sm font-semibold text-[var(--accent-1)] hover:underline">All customers →</a>
             </div>
 
             <div class="mt-5 overflow-x-auto">
-                <table class="min-w-full divide-y divide-slate-100 text-sm">
+                <table class="data-table min-w-full">
                     <thead>
-                        <tr class="text-left text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-slate-500">
-                            <th class="px-3 py-2">Customer</th>
-                            <th class="px-3 py-2 text-right">Tasks</th>
-                            <th class="px-3 py-2 text-right">Hours</th>
-                            <th class="px-3 py-2 text-right">Paid</th>
-                            <th class="px-3 py-2 text-right">Unpaid</th>
-                            <th class="px-3 py-2 text-right">Total</th>
+                        <tr>
+                            <th>Customer</th>
+                            <th class="text-right">Tasks</th>
+                            <th class="text-right">Hours</th>
+                            <th class="text-right">Paid</th>
+                            <th class="text-right">Unpaid</th>
+                            <th class="text-right">Total</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-100" data-motion-reveal data-motion-stagger data-motion-variant="up">
+                    <tbody>
                         @foreach ($crByCustomer as $row)
                             @php $total = (float) $row->paid_amount + (float) $row->unpaid_amount; @endphp
-                            <tr class="lift-hover hover:bg-slate-50/60">
-                                <td class="px-3 py-3">
-                                    <a href="{{ route('customers.show', $row->customer_id) }}" class="font-semibold text-slate-900 hover:text-sky-700">{{ $row->customer_name }}</a>
+                            <tr>
+                                <td>
+                                    <a href="{{ route('customers.show', $row->customer_id) }}" class="font-semibold text-[var(--fg-strong)] hover:text-[var(--accent-1)]">{{ $row->customer_name }}</a>
                                     @if ($row->company_name)
-                                        <p class="text-xs text-slate-500">{{ $row->company_name }}</p>
+                                        <p class="text-xs text-[var(--fg-muted)]">{{ $row->company_name }}</p>
                                     @endif
                                 </td>
-                                <td class="px-3 py-3 text-right text-xs text-slate-600">
-                                    <span class="font-semibold text-slate-900">{{ $row->total_count }}</span>
-                                    <span class="text-slate-400"> · {{ $row->paid_count }}P / {{ $row->unpaid_count }}U</span>
+                                <td class="text-right text-xs">
+                                    <span class="font-semibold text-[var(--fg-strong)]">{{ $row->total_count }}</span>
+                                    <span class="text-[var(--fg-faint)]"> · {{ $row->paid_count }}P / {{ $row->unpaid_count }}U</span>
                                 </td>
-                                <td class="px-3 py-3 text-right text-sm text-slate-700">{{ rtrim(rtrim(number_format((float) $row->total_hours, 2), '0'), '.') ?: '0' }}h</td>
-                                <td class="px-3 py-3 text-right">
-                                    <span class="inline-flex items-center rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-200">
+                                <td class="text-right text-[var(--fg-default)]">{{ rtrim(rtrim(number_format((float) $row->total_hours, 2), '0'), '.') ?: '0' }}h</td>
+                                <td class="text-right">
+                                    <span class="badge" style="background: color-mix(in oklab, var(--tone-success) 12%, var(--bg-elevated)); border-color: color-mix(in oklab, var(--tone-success) 30%, var(--border-soft)); color: var(--tone-success);">
                                         Rs {{ number_format((float) $row->paid_amount, 0) }}
                                     </span>
                                 </td>
-                                <td class="px-3 py-3 text-right">
-                                    <span class="inline-flex items-center rounded-full bg-rose-50 px-2.5 py-1 text-xs font-semibold text-rose-700 ring-1 ring-rose-200">
+                                <td class="text-right">
+                                    <span class="badge" style="background: color-mix(in oklab, var(--tone-danger) 12%, var(--bg-elevated)); border-color: color-mix(in oklab, var(--tone-danger) 30%, var(--border-soft)); color: var(--tone-danger);">
                                         Rs {{ number_format((float) $row->unpaid_amount, 0) }}
                                     </span>
                                 </td>
-                                <td class="px-3 py-3 text-right text-sm font-semibold text-slate-950">Rs {{ number_format($total, 0) }}</td>
+                                <td class="text-right font-semibold text-[var(--fg-strong)]">Rs {{ number_format($total, 0) }}</td>
                             </tr>
                         @endforeach
                     </tbody>
                     <tfoot>
-                        <tr class="text-sm">
-                            <td class="px-3 py-3 text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-slate-500">Total</td>
-                            <td class="px-3 py-3 text-right text-xs text-slate-600">{{ $crByCustomer->sum('total_count') }}</td>
-                            <td class="px-3 py-3 text-right text-sm font-semibold text-slate-900">{{ rtrim(rtrim(number_format((float) $crByCustomer->sum('total_hours'), 2), '0'), '.') ?: '0' }}h</td>
-                            <td class="px-3 py-3 text-right text-sm font-semibold text-emerald-700">Rs {{ number_format($crPaidAmount, 0) }}</td>
-                            <td class="px-3 py-3 text-right text-sm font-semibold text-rose-700">Rs {{ number_format($crUnpaidAmount, 0) }}</td>
-                            <td class="px-3 py-3 text-right text-sm font-bold text-slate-950">Rs {{ number_format($crPaidAmount + $crUnpaidAmount, 0) }}</td>
+                        <tr style="background: var(--bg-subtle);">
+                            <td class="text-[0.66rem] font-bold uppercase tracking-[0.16em] text-[var(--fg-muted)]">Total</td>
+                            <td class="text-right text-xs text-[var(--fg-muted)]">{{ $crByCustomer->sum('total_count') }}</td>
+                            <td class="text-right font-semibold text-[var(--fg-strong)]">{{ rtrim(rtrim(number_format((float) $crByCustomer->sum('total_hours'), 2), '0'), '.') ?: '0' }}h</td>
+                            <td class="text-right font-semibold" style="color: var(--tone-success);">Rs {{ number_format($crPaidAmount, 0) }}</td>
+                            <td class="text-right font-semibold" style="color: var(--tone-danger);">Rs {{ number_format($crUnpaidAmount, 0) }}</td>
+                            <td class="text-right font-bold text-[var(--fg-strong)]">Rs {{ number_format($crPaidAmount + $crUnpaidAmount, 0) }}</td>
                         </tr>
                     </tfoot>
                 </table>
@@ -182,63 +190,63 @@
         </section>
     @endif
 
-    <section data-motion-reveal data-motion-variant="up" data-tilt data-tilt-max="2" class="tilt-surface mt-6 rounded-[2rem] border border-white/70 bg-white/90 p-6 shadow-lg shadow-slate-900/5 backdrop-blur">
+    <section data-page-section data-motion-reveal data-motion-variant="up" class="surface-elevated mt-6 p-6">
         <div class="flex items-center justify-between gap-3">
             <div>
-                <h2 class="text-lg font-semibold text-slate-950">Pending tasks</h2>
-                <p class="text-sm text-slate-500">Top open tasks across projects. Overdue first, then by priority.</p>
+                <h2 class="text-base font-semibold text-[var(--fg-strong)]">Pending tasks</h2>
+                <p class="text-sm text-[var(--fg-muted)]">Top open tasks across projects. Overdue first, then by priority.</p>
             </div>
-            <a href="{{ route('projects.index') }}" class="text-sm font-medium text-sky-700 hover:text-sky-900">All projects</a>
+            <a href="{{ route('projects.index') }}" class="text-sm font-semibold text-[var(--accent-1)] hover:underline">All projects →</a>
         </div>
 
         <div class="mt-5 overflow-x-auto">
             @if ($pendingTasks->isNotEmpty())
-                <table class="min-w-full divide-y divide-slate-100 text-sm">
+                <table class="data-table min-w-full">
                     <thead>
-                        <tr class="text-left text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-slate-500">
-                            <th class="px-3 py-2">Task</th>
-                            <th class="px-3 py-2">Project</th>
-                            <th class="px-3 py-2">Priority</th>
-                            <th class="px-3 py-2">Status</th>
-                            <th class="px-3 py-2">Due</th>
+                        <tr>
+                            <th>Task</th>
+                            <th>Project</th>
+                            <th>Priority</th>
+                            <th>Status</th>
+                            <th>Due</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-100" data-motion-reveal data-motion-stagger data-motion-variant="up">
+                    <tbody>
                         @foreach ($pendingTasks as $task)
                             @php $overdue = $task->isOverdue(); @endphp
-                            <tr class="lift-hover hover:bg-slate-50/60">
-                                <td class="px-3 py-3">
-                                    <p class="font-semibold text-slate-900">{{ $task->title }}</p>
+                            <tr>
+                                <td>
+                                    <p class="font-semibold text-[var(--fg-strong)]">{{ $task->title }}</p>
                                     @if ($task->assignee)
-                                        <p class="text-xs text-slate-500">{{ $task->assignee }}</p>
+                                        <p class="text-xs text-[var(--fg-muted)]">{{ $task->assignee }}</p>
                                     @endif
                                 </td>
-                                <td class="px-3 py-3 text-sm">
+                                <td>
                                     @if ($task->project)
-                                        <a href="{{ route('projects.show', $task->project_id) }}" class="font-medium text-slate-800 hover:text-sky-700">{{ $task->project->project_name }}</a>
+                                        <a href="{{ route('projects.show', $task->project_id) }}" class="font-medium text-[var(--fg-default)] hover:text-[var(--accent-1)]">{{ $task->project->project_name }}</a>
                                         @if ($task->project->customer)
-                                            <p class="text-xs text-slate-500">{{ $task->project->customer->name }}</p>
+                                            <p class="text-xs text-[var(--fg-muted)]">{{ $task->project->customer->name }}</p>
                                         @endif
                                     @else
-                                        <span class="text-slate-400">—</span>
+                                        <span class="text-[var(--fg-faint)]">—</span>
                                     @endif
                                 </td>
-                                <td class="px-3 py-3">
+                                <td>
                                     <x-admin.status-badge :label="$task->priority->label()" :classes="$task->priority->badgeClasses()" />
                                 </td>
-                                <td class="px-3 py-3">
+                                <td>
                                     <x-admin.status-badge :label="$task->status->label()" :classes="$task->status->badgeClasses()" />
                                 </td>
-                                <td class="px-3 py-3 text-xs">
+                                <td class="text-xs">
                                     @if ($task->due_date)
-                                        <span class="inline-flex items-center rounded-full px-2.5 py-1 font-semibold ring-1 {{ $overdue ? 'bg-rose-50 text-rose-700 ring-rose-200' : 'bg-slate-100 text-slate-700 ring-slate-200' }}">
+                                        <span class="badge" @if ($overdue) style="background: color-mix(in oklab, var(--tone-danger) 12%, var(--bg-elevated)); color: var(--tone-danger); border-color: color-mix(in oklab, var(--tone-danger) 30%, var(--border-soft));" @endif>
                                             {{ $task->due_date->format('d M Y') }}
                                             @if ($overdue)
                                                 · overdue
                                             @endif
                                         </span>
                                     @else
-                                        <span class="text-slate-400">No due date</span>
+                                        <span class="text-[var(--fg-faint)]">No due date</span>
                                     @endif
                                 </td>
                             </tr>
@@ -246,64 +254,69 @@
                     </tbody>
                 </table>
             @else
-                <p class="rounded-2xl border border-dashed border-slate-200 px-4 py-6 text-sm text-slate-500">No pending tasks. All caught up.</p>
+                <div class="flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed px-6 py-10 text-sm" style="border-color: var(--border-default); color: var(--fg-muted);">
+                    <svg viewBox="0 0 24 24" class="h-8 w-8 opacity-50" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path stroke-linecap="round" stroke-linejoin="round" d="m9 12 2 2 4-4"/></svg>
+                    All caught up. No pending tasks.
+                </div>
             @endif
         </div>
     </section>
 
     <div class="mt-6 grid gap-6 xl:grid-cols-2">
-        <section data-motion-reveal data-motion-variant="up" data-tilt data-tilt-max="3" class="tilt-surface rounded-[2rem] border border-white/70 bg-white/90 p-6 shadow-lg shadow-slate-900/5 backdrop-blur">
+        <section data-page-section data-motion-reveal data-motion-variant="up" class="surface-elevated p-6">
             <div class="flex items-center justify-between gap-3">
                 <div>
-                    <h2 class="text-lg font-semibold text-slate-950">Recent leads</h2>
-                    <p class="text-sm text-slate-500">Latest pipeline updates and conversion status.</p>
+                    <h2 class="text-base font-semibold text-[var(--fg-strong)]">Recent leads</h2>
+                    <p class="text-sm text-[var(--fg-muted)]">Latest pipeline updates and conversion status.</p>
                 </div>
-                <a href="{{ route('leads.index') }}" class="text-sm font-medium text-sky-700 hover:text-sky-900">View all</a>
+                <a href="{{ route('leads.index') }}" class="text-sm font-semibold text-[var(--accent-1)] hover:underline">View all →</a>
             </div>
 
-            <div class="mt-5 space-y-4" data-motion-reveal data-motion-stagger data-motion-variant="up">
+            <div class="mt-5 space-y-2.5" data-motion-reveal data-motion-stagger data-motion-variant="up">
                 @forelse ($recentLeads as $lead)
-                    <div class="lift-hover rounded-2xl border border-slate-100 bg-slate-50/80 p-4">
-                        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div class="lift-hover flex flex-col gap-2 rounded-xl border p-3.5 sm:flex-row sm:items-center sm:justify-between" style="border-color: var(--border-soft); background: var(--bg-subtle);">
+                        <div class="flex items-center gap-3">
+                            <span class="flex h-9 w-9 items-center justify-center rounded-lg text-[0.72rem] font-bold" style="background: var(--accent-1); color: var(--accent-on);">
+                                {{ mb_strtoupper(mb_substr($lead->name, 0, 2)) }}
+                            </span>
                             <div>
-                                <p class="font-semibold text-slate-900">{{ $lead->name }}</p>
-                                <p class="text-sm text-slate-500">{{ $lead->source }} | {{ $lead->email ?: $lead->phone }}</p>
+                                <p class="font-semibold text-[var(--fg-strong)]">{{ $lead->name }}</p>
+                                <p class="text-xs text-[var(--fg-muted)]">{{ $lead->source }} · {{ $lead->email ?: $lead->phone }}</p>
                             </div>
-                            <x-admin.status-badge :label="$lead->status->label()" :classes="$lead->status->badgeClasses()" />
                         </div>
+                        <x-admin.status-badge :label="$lead->status->label()" :classes="$lead->status->badgeClasses()" />
                     </div>
                 @empty
-                    <p class="rounded-2xl border border-dashed border-slate-200 px-4 py-6 text-sm text-slate-500">No leads recorded yet.</p>
+                    <p class="rounded-xl border border-dashed px-4 py-6 text-sm" style="border-color: var(--border-default); color: var(--fg-muted);">No leads recorded yet.</p>
                 @endforelse
             </div>
         </section>
 
-        <section data-motion-reveal data-motion-variant="up" data-tilt data-tilt-max="3" class="tilt-surface rounded-[2rem] border border-white/70 bg-white/90 p-6 shadow-lg shadow-slate-900/5 backdrop-blur">
+        <section data-page-section data-motion-reveal data-motion-variant="up" class="surface-elevated p-6">
             <div class="flex items-center justify-between gap-3">
                 <div>
-                    <h2 class="text-lg font-semibold text-slate-950">Recent projects</h2>
-                    <p class="text-sm text-slate-500">Current delivery status and progress snapshots.</p>
+                    <h2 class="text-base font-semibold text-[var(--fg-strong)]">Recent projects</h2>
+                    <p class="text-sm text-[var(--fg-muted)]">Current delivery status and progress snapshots.</p>
                 </div>
-                <a href="{{ route('projects.index') }}" class="text-sm font-medium text-sky-700 hover:text-sky-900">View all</a>
+                <a href="{{ route('projects.index') }}" class="text-sm font-semibold text-[var(--accent-1)] hover:underline">View all →</a>
             </div>
 
-            <div class="mt-5 space-y-4" data-motion-reveal data-motion-stagger data-motion-variant="up">
+            <div class="mt-5 space-y-2.5" data-motion-reveal data-motion-stagger data-motion-variant="up">
                 @forelse ($recentProjects as $project)
-                    <div class="lift-hover rounded-2xl border border-slate-100 bg-slate-50/80 p-4">
-                        <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                    <div class="lift-hover rounded-xl border p-3.5" style="border-color: var(--border-soft); background: var(--bg-subtle);">
+                        <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                             <div>
-                                <p class="font-semibold text-slate-900">{{ $project->project_name }}</p>
-                                <p class="text-sm text-slate-500">{{ $project->customer?->name }}</p>
+                                <p class="font-semibold text-[var(--fg-strong)]">{{ $project->project_name }}</p>
+                                <p class="text-xs text-[var(--fg-muted)]">{{ $project->customer?->name }}</p>
                             </div>
                             <x-admin.status-badge :label="$project->status->label()" :classes="$project->status->badgeClasses()" />
                         </div>
-
-                        <div class="mt-4">
+                        <div class="mt-3.5">
                             <x-admin.progress-bar :value="$project->progress" />
                         </div>
                     </div>
                 @empty
-                    <p class="rounded-2xl border border-dashed border-slate-200 px-4 py-6 text-sm text-slate-500">No projects recorded yet.</p>
+                    <p class="rounded-xl border border-dashed px-4 py-6 text-sm" style="border-color: var(--border-default); color: var(--fg-muted);">No projects recorded yet.</p>
                 @endforelse
             </div>
         </section>
