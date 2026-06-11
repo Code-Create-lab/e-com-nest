@@ -18,7 +18,7 @@
 
             <div>
                 <label for="email" class="mb-2 block text-sm font-medium text-slate-700">Email</label>
-                <input id="email" name="email" type="email" value="{{ old('email', 'admin@example.com') }}" required autofocus class="input-3d w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm shadow-sm outline-none">
+                <input id="email" name="email" type="email" value="{{ old('email') }}" required autofocus class="input-3d w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm shadow-sm outline-none">
             </div>
 
             <div>
