@@ -7,6 +7,7 @@ use App\Http\Requests\Lead\StoreLeadRequest;
 use App\Http\Requests\Lead\UpdateLeadRequest;
 use App\Models\Lead;
 use App\Services\LeadConversionService;
+use App\Services\LeadImportService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -84,6 +85,41 @@ class LeadController extends Controller
         return redirect()
             ->route('leads.index')
             ->with('success', 'Lead deleted successfully.');
+    }
+
+    public function import(Request $request, LeadImportService $leadImportService): RedirectResponse
+    {
+        $request->validate([
+            'file' => ['required', 'file', 'mimes:xlsx,xls,csv', 'max:10240'],
+        ]);
+
+        $result = $leadImportService->import($request->file('file')->getRealPath());
+
+        $message = sprintf(
+            'Import complete: %d new, %d updated, %d skipped.',
+            $result['imported'],
+            $result['updated'],
+            $result['skipped'],
+        );
+
+        return redirect()
+            ->route('leads.index')
+            ->with('success', $message);
+    }
+
+    public function updateStatus(Request $request, Lead $lead): RedirectResponse
+    {
+        $validated = $request->validate([
+            'status' => ['required', 'string', 'in:'.implode(',', array_diff(LeadStatus::values(), [LeadStatus::Converted->value]))],
+        ]);
+
+        if ($lead->status === LeadStatus::Converted) {
+            return back()->with('error', 'Converted leads cannot change status.');
+        }
+
+        $lead->update(['status' => $validated['status']]);
+
+        return back()->with('success', 'Lead status updated.');
     }
 
     public function convert(Lead $lead, LeadConversionService $leadConversionService): RedirectResponse

@@ -23,6 +23,8 @@ Route::middleware('auth')->group(function (): void {
     Route::resource('customers', CustomerController::class);
 
     Route::post('/leads/{lead}/convert', [LeadController::class, 'convert'])->name('leads.convert');
+    Route::patch('/leads/{lead}/status', [LeadController::class, 'updateStatus'])->name('leads.status');
+    Route::post('/leads/import', [LeadController::class, 'import'])->name('leads.import');
     Route::resource('leads', LeadController::class);
 
     Route::resource('projects', ProjectController::class);

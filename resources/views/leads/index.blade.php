@@ -6,6 +6,16 @@
 
 @section('content')
     <x-admin.page-header title="Leads" description="Capture, qualify, and convert leads into customers from a single searchable pipeline.">
+        <form action="{{ route('leads.import') }}" method="POST" enctype="multipart/form-data">
+            @csrf
+            <label class="inline-flex cursor-pointer items-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-slate-300 hover:text-slate-950">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 16V4m0 0L8 8m4-4l4 4M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2" />
+                </svg>
+                Import Excel
+                <input type="file" name="file" accept=".xlsx,.xls,.csv" class="hidden" onchange="this.form.submit()">
+            </label>
+        </form>
         <a href="{{ route('leads.create') }}" class="inline-flex items-center rounded-2xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-slate-900/15 transition hover:bg-slate-800">
             Add lead
         </a>
@@ -42,9 +52,37 @@
                         <div>
                             <div class="flex flex-wrap items-center gap-3">
                                 <h2 class="text-lg font-semibold text-slate-950">{{ $lead->name }}</h2>
-                                <x-admin.status-badge :label="$lead->status->label()" :classes="$lead->status->badgeClasses()" />
+                                @if ($lead->status === \App\Enums\LeadStatus::Converted)
+                                    <x-admin.status-badge :label="$lead->status->label()" :classes="$lead->status->badgeClasses()" />
+                                @else
+                                    <form action="{{ route('leads.status', $lead) }}" method="POST">
+                                        @csrf
+                                        @method('PATCH')
+                                        <select name="status" onchange="this.form.submit()" class="inline-flex cursor-pointer items-center rounded-full px-3 py-1.5 text-xs font-semibold ring-1 ring-inset {{ $lead->status->badgeClasses() }} border-0 outline-none transition focus:ring-2 focus:ring-sky-400">
+                                            @foreach ($statuses as $statusOption)
+                                                @continue($statusOption === \App\Enums\LeadStatus::Converted)
+                                                <option value="{{ $statusOption->value }}" @selected($lead->status === $statusOption)>{{ $statusOption->label() }}</option>
+                                            @endforeach
+                                        </select>
+                                    </form>
+                                @endif
+                                @if ($lead->lead_score !== null)
+                                    <span class="inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold ring-1 ring-inset {{ $lead->lead_score >= 80 ? 'bg-emerald-50 text-emerald-700 ring-emerald-200' : ($lead->lead_score >= 50 ? 'bg-amber-50 text-amber-700 ring-amber-200' : 'bg-slate-100 text-slate-600 ring-slate-200') }}">
+                                        Score {{ $lead->lead_score }}
+                                    </span>
+                                @endif
+                                @if ($lead->best_pick)
+                                    <span class="inline-flex items-center gap-1 rounded-full bg-yellow-50 px-3 py-1 text-xs font-semibold text-yellow-700 ring-1 ring-inset ring-yellow-200">
+                                        ★ Best pick
+                                    </span>
+                                @endif
                             </div>
-                            <p class="mt-2 text-sm text-slate-500">{{ $lead->source }} | {{ $lead->email ?: 'No email' }} | {{ $lead->phone ?: 'No phone' }}</p>
+                            <p class="mt-2 text-sm text-slate-500">
+                                {{ $lead->source }}@if ($lead->source_handle) ({{ $lead->source_handle }})@endif
+                                @if ($lead->industry) | {{ $lead->industry }} @endif
+                                @if ($lead->followers !== null) | {{ number_format($lead->followers) }} followers @endif
+                                | {{ $lead->email ?: 'No email' }} | {{ $lead->phone ?: 'No phone' }}
+                            </p>
                             @if ($lead->customer)
                                 <p class="mt-2 text-sm text-emerald-700">Converted customer: {{ $lead->customer->name }}</p>
                             @endif
