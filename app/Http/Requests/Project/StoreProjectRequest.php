@@ -27,6 +27,7 @@ class StoreProjectRequest extends FormRequest
             'end_date' => ['nullable', 'date', 'after_or_equal:start_date'],
             'status' => ['required', new Enum(ProjectStatus::class)],
             'progress' => ['required', 'integer', 'between:0,100'],
+            'total_development_cost' => ['nullable', 'numeric', 'min:0', 'max:9999999999.99'],
             'engagement_type' => ['required', new Enum(EngagementType::class)],
             'monthly_amount' => ['nullable', 'numeric', 'min:0', 'required_if:engagement_type,monthly_retainer'],
             'billing_day' => ['nullable', 'integer', 'between:1,31'],

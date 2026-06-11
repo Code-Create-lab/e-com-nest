@@ -31,6 +31,7 @@ class UpdateCustomerRequest extends FormRequest
             'live_url' => ['nullable', 'url', 'max:255'],
             'stg_url' => ['nullable', 'url', 'max:255'],
             'system_monitor_url' => ['nullable', 'url', 'max:255'],
+            'hourly_rate' => ['nullable', 'numeric', 'min:0', 'max:999999.99'],
         ];
     }
 }

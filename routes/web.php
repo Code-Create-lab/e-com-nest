@@ -9,10 +9,7 @@ use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\TaskController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function(){
-
-    return view('index');
-});
+Route::redirect('/', '/dashboard');
 Route::redirect('/admin', '/dashboard');
 
 Route::middleware('guest')->group(function (): void {

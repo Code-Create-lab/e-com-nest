@@ -19,12 +19,12 @@
         <div class="bg-[linear-gradient(135deg,_#0f3d91_0%,_#1d5fd0_45%,_#ff9f1c_100%)] px-6 py-5 text-white">
             <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div class="flex items-center gap-4">
-                    <div class="flex h-16 w-16 items-center justify-center rounded-[1.2rem] bg-white/95 p-2 shadow-lg shadow-slate-950/10">
-                        <img src="{{ asset('logo.jpeg') }}" alt="eComNest Soultions logo" class="h-full w-full rounded-[0.9rem] object-contain">
+                    <div class="flex h-24 w-24 items-center justify-center rounded-[1.2rem] bg-white/95 p-1.5 shadow-lg shadow-slate-950/10">
+                        <img src="{{ asset('logo.jpeg') }}" alt="10xCart logo" class="h-full w-full rounded-[0.9rem] object-contain">
                     </div>
                     <div>
                         <p class="text-xs uppercase tracking-[0.3em] text-white/70">Invoice Builder</p>
-                        <h2 class="mt-2 text-2xl font-semibold">eComNest Soultions</h2>
+                        <h2 class="mt-2 text-2xl font-semibold">10xCart</h2>
                         <p class="mt-2 text-sm text-white/80">Create a cleaner invoice with customer linkage, live totals, and print-ready output.</p>
                     </div>
                 </div>

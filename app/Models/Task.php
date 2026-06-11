@@ -82,7 +82,12 @@ class Task extends Model
 
     public function effectiveHourlyRate(): float
     {
-        return (float) ($this->hourly_rate ?? $this->project?->hourly_rate ?? 0);
+        return (float) (
+            $this->hourly_rate
+            ?? $this->project?->hourly_rate
+            ?? $this->project?->customer?->hourly_rate
+            ?? 0
+        );
     }
 
     public function billableAmount(): float

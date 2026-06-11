@@ -24,7 +24,18 @@ class Customer extends Model
         'live_url',
         'stg_url',
         'system_monitor_url',
+        'hourly_rate',
     ];
+
+    /**
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'hourly_rate' => 'decimal:2',
+        ];
+    }
 
     public function projects(): HasMany
     {

@@ -3,10 +3,10 @@
 <div class="grid gap-5 md:grid-cols-2">
     <div>
         <label for="customer_id" class="mb-2 block text-sm font-medium text-slate-700">Customer</label>
-        <select id="customer_id" name="customer_id" required class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm shadow-sm outline-none transition focus:border-sky-400 focus:ring-4 focus:ring-sky-100">
+        <select id="customer_id" name="customer_id" required data-customer-select class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm shadow-sm outline-none transition focus:border-sky-400 focus:ring-4 focus:ring-sky-100">
             <option value="">Select a customer</option>
             @foreach ($customers as $customerOption)
-                <option value="{{ $customerOption->id }}" @selected((string) old('customer_id', $project->customer_id) === (string) $customerOption->id)>{{ $customerOption->name }}</option>
+                <option value="{{ $customerOption->id }}" data-hourly-rate="{{ $customerOption->hourly_rate }}" @selected((string) old('customer_id', $project->customer_id) === (string) $customerOption->id)>{{ $customerOption->name }}</option>
             @endforeach
         </select>
     </div>
@@ -41,6 +41,13 @@
     </div>
 
     <div class="md:col-span-2">
+        <label for="total_development_cost" class="mb-2 block text-sm font-medium text-slate-700">Total Development Cost (Rs)</label>
+        <input id="total_development_cost" name="total_development_cost" type="number" step="0.01" min="0" value="{{ old('total_development_cost', $project->total_development_cost) }}" placeholder="0.00" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm shadow-sm outline-none transition focus:border-sky-400 focus:ring-4 focus:ring-sky-100">
+        <p class="mt-2 text-xs text-slate-500">Fixed scope cost for the initial development. Post-launch change requests are billed hourly via tasks.</p>
+        @error('total_development_cost')<p class="mt-2 text-xs text-rose-600">{{ $message }}</p>@enderror
+    </div>
+
+    <div class="md:col-span-2">
         <label for="description" class="mb-2 block text-sm font-medium text-slate-700">Description</label>
         <textarea id="description" name="description" rows="5" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm shadow-sm outline-none transition focus:border-sky-400 focus:ring-4 focus:ring-sky-100">{{ old('description', $project->description) }}</textarea>
     </div>
@@ -61,9 +68,10 @@
     </div>
 
     <div class="md:col-span-2">
-        <label for="hourly_rate" class="mb-2 block text-sm font-medium text-slate-700">Default Hourly Rate (Rs)</label>
-        <input id="hourly_rate" name="hourly_rate" type="number" step="0.01" min="0" value="{{ old('hourly_rate', $project->hourly_rate) }}" placeholder="1500.00" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm shadow-sm outline-none transition focus:border-sky-400 focus:ring-4 focus:ring-sky-100">
-        <p class="mt-2 text-xs text-slate-500">Used for billable tasks. For Monthly Support, applies to overage hours beyond retainer.</p>
+        <label for="hourly_rate" class="mb-2 block text-sm font-medium text-slate-700">Hourly Rate Override (Rs)</label>
+        <input id="hourly_rate" name="hourly_rate" type="number" step="0.01" min="0" value="{{ old('hourly_rate', $project->hourly_rate) }}" placeholder="Leave blank to use customer default" data-hourly-rate-input class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm shadow-sm outline-none transition focus:border-sky-400 focus:ring-4 focus:ring-sky-100">
+        <p class="mt-2 text-xs text-slate-500">Leave blank to inherit the customer's default rate. Set a value here only when this project bills at a different rate. Tasks may further override per change-request.</p>
+        <p data-customer-rate-hint class="mt-1 text-xs text-sky-700 hidden"></p>
         @error('hourly_rate')<p class="mt-2 text-xs text-rose-600">{{ $message }}</p>@enderror
     </div>
 
@@ -102,10 +110,36 @@
     (function () {
         const toggle = document.querySelector('[data-engagement-toggle]');
         const block = document.querySelector('[data-retainer-fields]');
-        if (!toggle || !block) return;
-        const update = () => block.classList.toggle('hidden', toggle.value !== 'monthly_retainer');
-        toggle.addEventListener('change', update);
-        update();
+        if (toggle && block) {
+            const update = () => block.classList.toggle('hidden', toggle.value !== 'monthly_retainer');
+            toggle.addEventListener('change', update);
+            update();
+        }
+
+        const customerSelect = document.querySelector('[data-customer-select]');
+        const rateInput = document.querySelector('[data-hourly-rate-input]');
+        const rateHint = document.querySelector('[data-customer-rate-hint]');
+        if (customerSelect && rateInput && rateHint) {
+            const formatRate = (raw) => {
+                const num = parseFloat(raw);
+                return Number.isFinite(num) && num > 0 ? num.toFixed(2) : null;
+            };
+            const syncHint = () => {
+                const opt = customerSelect.selectedOptions[0];
+                const rate = opt ? formatRate(opt.dataset.hourlyRate) : null;
+                if (rate) {
+                    rateHint.textContent = `Customer default: Rs ${rate} / hr`;
+                    rateHint.classList.remove('hidden');
+                    if (!rateInput.value) rateInput.placeholder = `${rate} (customer default)`;
+                } else {
+                    rateHint.textContent = '';
+                    rateHint.classList.add('hidden');
+                    rateInput.placeholder = 'Leave blank to use customer default';
+                }
+            };
+            customerSelect.addEventListener('change', syncHint);
+            syncHint();
+        }
     })();
 </script>
 

@@ -47,6 +47,17 @@
         <input id="system_monitor_url" name="system_monitor_url" type="url" inputmode="url" placeholder="https://status.example.com" value="{{ old('system_monitor_url', $customer->system_monitor_url) }}" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm shadow-sm outline-none transition focus:border-sky-400 focus:ring-4 focus:ring-sky-100">
         @error('system_monitor_url')<p class="mt-2 text-xs text-rose-600">{{ $message }}</p>@enderror
     </div>
+
+    <div class="md:col-span-2 mt-2 border-t border-slate-100 pt-5">
+        <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Billing</p>
+    </div>
+
+    <div class="md:col-span-2">
+        <label for="hourly_rate" class="mb-2 block text-sm font-medium text-slate-700">Default Hourly Rate (Rs)</label>
+        <input id="hourly_rate" name="hourly_rate" type="number" step="0.01" min="0" value="{{ old('hourly_rate', $customer->hourly_rate) }}" placeholder="1500.00" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm shadow-sm outline-none transition focus:border-sky-400 focus:ring-4 focus:ring-sky-100">
+        <p class="mt-2 text-xs text-slate-500">Default per-hour rate for this client. Projects and individual change-request tasks inherit this unless overridden.</p>
+        @error('hourly_rate')<p class="mt-2 text-xs text-rose-600">{{ $message }}</p>@enderror
+    </div>
 </div>
 
 <div class="mt-8 flex flex-wrap gap-3">

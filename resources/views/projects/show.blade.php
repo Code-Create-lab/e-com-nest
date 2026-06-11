@@ -55,6 +55,20 @@
                     <dt class="text-xs uppercase tracking-[0.2em] text-slate-500">End Date</dt>
                     <dd class="mt-2 text-sm text-slate-900">{{ $project->end_date?->format('d M Y') ?: 'Not set' }}</dd>
                 </div>
+                <div>
+                    <dt class="text-xs uppercase tracking-[0.2em] text-slate-500">Total Development Cost</dt>
+                    <dd class="mt-2 text-sm text-slate-900">{{ $project->total_development_cost !== null ? 'Rs ' . number_format((float) $project->total_development_cost, 2) : 'Not set' }}</dd>
+                </div>
+                <div>
+                    <dt class="text-xs uppercase tracking-[0.2em] text-slate-500">Hourly Rate</dt>
+                    <dd class="mt-2 text-sm text-slate-900">
+                        @php $effRate = $project->hourly_rate ?? $project->customer?->hourly_rate; @endphp
+                        {{ $effRate !== null ? 'Rs ' . number_format((float) $effRate, 2) . '/hr' : 'Not set' }}
+                        @if ($project->hourly_rate === null && $project->customer?->hourly_rate !== null)
+                            <span class="text-xs text-slate-500">(customer default)</span>
+                        @endif
+                    </dd>
+                </div>
                 <div class="md:col-span-2">
                     <dt class="text-xs uppercase tracking-[0.2em] text-slate-500">Description</dt>
                     <dd class="mt-2 text-sm text-slate-900">{{ $project->description ?: 'No description added.' }}</dd>

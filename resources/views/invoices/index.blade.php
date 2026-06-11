@@ -50,8 +50,8 @@
                 <article class="rounded-[1.8rem] border border-slate-200 bg-[linear-gradient(180deg,_#ffffff,_#f8fbff)] p-5 shadow-lg shadow-slate-900/5">
                     <div class="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
                         <div class="flex items-start gap-4">
-                            <div class="flex h-16 w-16 items-center justify-center rounded-[1.25rem] bg-[linear-gradient(135deg,_#0f3d91,_#ff9f1c)] p-2 shadow-lg shadow-slate-900/10">
-                                <img src="{{ asset('logo.jpeg') }}" alt="eComNest Soultions logo" class="h-full w-full rounded-[0.95rem] bg-white object-contain">
+                            <div class="flex h-24 w-24 items-center justify-center rounded-[1.25rem] bg-white p-1.5 shadow-lg shadow-slate-900/10">
+                                <img src="{{ asset('logo.jpeg') }}" alt="10xCart logo" class="h-full w-full rounded-[0.95rem] bg-white object-contain">
                             </div>
                             <div>
                                 <div class="flex flex-wrap items-center gap-3">
