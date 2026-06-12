@@ -20,8 +20,8 @@ class UpdateLeadRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:120'],
-            'email' => ['nullable', 'email', 'max:150', 'required_without:phone'],
-            'phone' => ['nullable', 'string', 'max:30', 'required_without:email'],
+            'email' => ['nullable', 'email', 'max:150'],
+            'phone' => ['nullable', 'string', 'max:30'],
             'source' => ['required', 'string', 'max:120'],
             'source_handle' => ['nullable', 'string', 'max:120'],
             'website' => ['nullable', 'string', 'max:255'],
