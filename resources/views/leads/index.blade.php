@@ -78,7 +78,7 @@
                                 @endif
                             </div>
                             <p class="mt-2 text-sm text-slate-500">
-                                {{ $lead->source }}@if ($lead->source_handle) ({{ $lead->source_handle }})@endif
+                                {{ $lead->source }}@if ($lead->source_handle) (@if (str_contains(strtolower($lead->source), 'instagram'))<a href="https://instagram.com/{{ ltrim($lead->source_handle, '@') }}" target="_blank" rel="noopener noreferrer" class="font-medium text-indigo-600 hover:text-indigo-800 hover:underline">{{ $lead->source_handle }}</a>@else{{ $lead->source_handle }}@endif)@endif
                                 @if ($lead->industry) | {{ $lead->industry }} @endif
                                 @if ($lead->followers !== null) | {{ number_format($lead->followers) }} followers @endif
                                 | {{ $lead->email ?: 'No email' }} | {{ $lead->phone ?: 'No phone' }}

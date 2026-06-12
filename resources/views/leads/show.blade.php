@@ -103,7 +103,13 @@
                 </div>
                 <div>
                     <dt class="text-xs uppercase tracking-[0.2em] text-slate-500">Handle</dt>
-                    <dd class="mt-2 text-sm text-slate-900">{{ $lead->source_handle ?: 'Not provided' }}</dd>
+                    <dd class="mt-2 text-sm text-slate-900">
+                        @if ($lead->source_handle && str_contains(strtolower($lead->source), 'instagram'))
+                            <a href="https://instagram.com/{{ ltrim($lead->source_handle, '@') }}" target="_blank" rel="noopener noreferrer" class="font-medium text-indigo-600 hover:text-indigo-800 hover:underline">{{ $lead->source_handle }}</a>
+                        @else
+                            {{ $lead->source_handle ?: 'Not provided' }}
+                        @endif
+                    </dd>
                 </div>
                 <div>
                     <dt class="text-xs uppercase tracking-[0.2em] text-slate-500">Followers</dt>
