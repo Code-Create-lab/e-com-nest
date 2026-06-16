@@ -110,37 +110,61 @@ class LeadWebhookTest extends TestCase
         ]);
     }
 
-    public function test_resending_same_lead_updates_instead_of_duplicating(): void
+    public function test_resending_same_name_and_handle_is_skipped(): void
     {
-        $this->postLeads([[
+        $payload = [[
             'Company Name' => 'Dup Co',
-            'Email' => 'dup@test.com',
+            'Source Handle' => '@dup',
             'Lead Score (0-100)' => 50,
-        ]])->assertOk();
+        ]];
+
+        $this->postLeads($payload)->assertOk()->assertJson(['imported' => 1]);
 
         $this->postLeads([[
             'Company Name' => 'Dup Co',
-            'Email' => 'dup@test.com',
+            'Source Handle' => '@dup',
             'Lead Score (0-100)' => 90,
-        ]])->assertOk()->assertJson(['imported' => 0, 'updated' => 1]);
+        ]])->assertOk()->assertJson(['imported' => 0, 'skipped' => 1]);
 
         $this->assertDatabaseCount('leads', 1);
-        $this->assertDatabaseHas('leads', ['email' => 'dup@test.com', 'lead_score' => 90]);
+        $this->assertDatabaseHas('leads', ['name' => 'Dup Co', 'lead_score' => 50]);
     }
 
-    public function test_rows_without_name_are_skipped(): void
+    public function test_same_name_different_handle_inserts(): void
+    {
+        $this->postLeads([['Company Name' => 'Same Co', 'Source Handle' => '@a']])->assertOk();
+        $this->postLeads([['Company Name' => 'Same Co', 'Source Handle' => '@b']])
+            ->assertOk()->assertJson(['imported' => 1, 'skipped' => 0]);
+
+        $this->assertDatabaseCount('leads', 2);
+    }
+
+    public function test_rows_without_email_or_handle_are_skipped(): void
     {
         $this->postLeads([
-            ['Email' => 'noname@test.com'],
-            ['Company Name' => 'Has Name', 'Source' => 'Instagram'],
-        ])->assertOk()->assertJson(['imported' => 1, 'skipped' => 1]);
+            ['Company Name' => 'Email Only', 'Email' => 'e@test.com'],
+            ['Company Name' => 'Handle Only', 'Source Handle' => '@handle'],
+            ['Company Name' => 'No Identifier', 'Source' => 'Instagram'],
+        ])->assertOk()->assertJson(['imported' => 2, 'skipped' => 1]);
 
-        $this->assertDatabaseCount('leads', 1);
+        $this->assertDatabaseCount('leads', 2);
+        $this->assertDatabaseMissing('leads', ['name' => 'No Identifier']);
+    }
+
+    public function test_name_falls_back_to_handle_then_email_when_missing(): void
+    {
+        $this->postLeads([
+            ['Source Handle' => '@onlyhandle'],
+            ['Email' => 'onlyemail@test.com'],
+        ])->assertOk()->assertJson(['imported' => 2]);
+
+        $this->assertDatabaseHas('leads', ['name' => '@onlyhandle', 'source_handle' => '@onlyhandle']);
+        $this->assertDatabaseHas('leads', ['name' => 'onlyemail@test.com', 'email' => 'onlyemail@test.com']);
     }
 
     public function test_source_defaults_to_webhook_when_missing(): void
     {
-        $this->postLeads([['Company Name' => 'No Source Co']])->assertOk();
+        $this->postLeads([['Company Name' => 'No Source Co', 'Email' => 'ns@test.com']])->assertOk();
 
         $this->assertDatabaseHas('leads', [
             'name' => 'No Source Co',
