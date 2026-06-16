@@ -128,10 +128,16 @@ class LeadImportService
 
                 $attributes = $this->mapRecord($record);
 
-                if (blank($attributes['name'] ?? null)) {
+                // Require at least an email or an Instagram/source handle to identify the lead.
+                if (blank($attributes['email'] ?? null) && blank($attributes['source_handle'] ?? null)) {
                     $result['skipped']++;
 
                     continue;
+                }
+
+                // name is NOT NULL; fall back to the handle or email when not supplied.
+                if (blank($attributes['name'] ?? null)) {
+                    $attributes['name'] = $attributes['source_handle'] ?? $attributes['email'];
                 }
 
                 $attributes['source'] = $attributes['source'] ?? 'Webhook';
