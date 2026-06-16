@@ -35,4 +35,8 @@ return [
         ],
     ],
 
+    'lead_webhook' => [
+        'secret' => env('LEADS_WEBHOOK_SECRET'),
+    ],
+
 ];

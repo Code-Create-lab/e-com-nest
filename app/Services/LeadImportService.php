@@ -105,6 +105,86 @@ class LeadImportService
     }
 
     /**
+     * Upsert leads received from a webhook payload.
+     *
+     * Each record is an associative array keyed by spreadsheet header
+     * ("Company Name") or by column name ("name"). Rows matching an
+     * existing lead (same email, or same name + source handle) are updated.
+     *
+     * @param array<int, array<string, mixed>> $records
+     * @return array{imported: int, updated: int, skipped: int}
+     */
+    public function syncRecords(array $records): array
+    {
+        $result = ['imported' => 0, 'updated' => 0, 'skipped' => 0];
+
+        DB::transaction(function () use ($records, &$result): void {
+            foreach ($records as $record) {
+                if (! is_array($record)) {
+                    $result['skipped']++;
+
+                    continue;
+                }
+
+                $attributes = $this->mapRecord($record);
+
+                if (blank($attributes['name'] ?? null)) {
+                    $result['skipped']++;
+
+                    continue;
+                }
+
+                $attributes['source'] = $attributes['source'] ?? 'Webhook';
+
+                $existing = $this->findExisting($attributes);
+
+                if ($existing) {
+                    $existing->fill($attributes)->save();
+                    $result['updated']++;
+                } else {
+                    (new Lead($attributes))->save();
+                    $result['imported']++;
+                }
+            }
+        });
+
+        return $result;
+    }
+
+    /**
+     * @param array<string, mixed> $record
+     * @return array<string, mixed>
+     */
+    private function mapRecord(array $record): array
+    {
+        $fillable = (new Lead())->getFillable();
+        $attributes = [];
+
+        foreach ($record as $key => $value) {
+            $normalized = Str::of((string) $key)->squish()->lower()->toString();
+
+            $attribute = self::COLUMN_MAP[$normalized]
+                ?? (in_array($snake = str_replace(' ', '_', $normalized), $fillable, true) ? $snake : null);
+
+            if ($attribute === null) {
+                continue;
+            }
+
+            if (is_string($value)) {
+                $value = trim($value);
+            }
+
+            if ($value === null || $value === '' || $value === 'None') {
+                continue;
+            }
+
+            $attributes[$attribute] = $this->castValue($attribute, $value);
+        }
+
+        return $attributes;
+    }
+
+    /**
      * @param array<int, mixed> $headerRow
      * @return array<int, string>
      */
