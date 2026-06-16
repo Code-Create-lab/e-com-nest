@@ -176,6 +176,13 @@ class LeadImportService
                 continue;
             }
 
+            if (is_array($value)) {
+                // Flatten arrays (e.g. audit issues sent as a JSON list) to a string column value.
+                $value = array_is_list($value)
+                    ? implode(', ', array_map(static fn ($item) => is_scalar($item) ? (string) $item : json_encode($item), $value))
+                    : json_encode($value);
+            }
+
             if (is_string($value)) {
                 $value = trim($value);
             }

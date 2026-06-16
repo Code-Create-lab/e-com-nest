@@ -162,6 +162,20 @@ class LeadWebhookTest extends TestCase
         $this->assertDatabaseHas('leads', ['name' => 'onlyemail@test.com', 'email' => 'onlyemail@test.com']);
     }
 
+    public function test_array_field_values_are_flattened_to_string(): void
+    {
+        $this->postLeads([[
+            'Company Name' => 'Array Co',
+            'Source Handle' => '@arr',
+            'Audit Issues' => ['no website', 'slow page', 'no ssl'],
+        ]])->assertOk();
+
+        $this->assertDatabaseHas('leads', [
+            'name' => 'Array Co',
+            'audit_issues' => 'no website, slow page, no ssl',
+        ]);
+    }
+
     public function test_source_defaults_to_webhook_when_missing(): void
     {
         $this->postLeads([['Company Name' => 'No Source Co', 'Email' => 'ns@test.com']])->assertOk();
