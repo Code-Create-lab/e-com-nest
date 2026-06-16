@@ -142,15 +142,15 @@ class LeadImportService
 
                 $attributes['source'] = $attributes['source'] ?? 'Webhook';
 
-                $existing = $this->findExisting($attributes);
+                // Skip when a lead with the same company name + source handle already exists.
+                if ($this->existsByNameAndHandle($attributes)) {
+                    $result['skipped']++;
 
-                if ($existing) {
-                    $existing->fill($attributes)->save();
-                    $result['updated']++;
-                } else {
-                    (new Lead($attributes))->save();
-                    $result['imported']++;
+                    continue;
                 }
+
+                (new Lead($attributes))->save();
+                $result['imported']++;
             }
         });
 
@@ -272,6 +272,21 @@ class LeadImportService
         $normalized = Str::of($value)->squish()->lower()->replace([' ', '-'], '_')->toString();
 
         return LeadStatus::tryFrom($normalized) ?? LeadStatus::New;
+    }
+
+    /**
+     * @param array<string, mixed> $attributes
+     */
+    private function existsByNameAndHandle(array $attributes): bool
+    {
+        if (blank($attributes['name'] ?? null) || blank($attributes['source_handle'] ?? null)) {
+            return false;
+        }
+
+        return Lead::query()
+            ->where('name', $attributes['name'])
+            ->where('source_handle', $attributes['source_handle'])
+            ->exists();
     }
 
     private function findExisting(array $attributes): ?Lead
