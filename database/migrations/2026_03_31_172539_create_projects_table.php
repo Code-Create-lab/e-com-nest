@@ -16,10 +16,17 @@ return new class extends Migration
             $table->foreignId('customer_id')->constrained()->restrictOnDelete();
             $table->string('project_name');
             $table->text('description')->nullable();
+            $table->string('engagement_type', 30)->default('one_time');
+            $table->decimal('monthly_amount', 12, 2)->nullable();
+            $table->unsignedTinyInteger('billing_day')->nullable();
+            $table->unsignedSmallInteger('hours_per_month')->nullable();
+            $table->decimal('hourly_rate', 8, 2)->nullable();
+            $table->date('support_renews_on')->nullable();
             $table->date('start_date')->nullable();
             $table->date('end_date')->nullable();
             $table->string('status')->default('planning');
             $table->unsignedTinyInteger('progress')->default(0);
+            $table->decimal('total_development_cost', 12, 2)->nullable();
             $table->timestamps();
 
             $table->index(['customer_id', 'status']);
